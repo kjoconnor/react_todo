@@ -53,19 +53,34 @@ class NewTodoForm extends React.Component {
 function Todo(props) {
     //What a basic Todo from the Database will look like
     return(
-        <div className="Todo">
+        <div className="todo">
             
                 //TODO: value must be the id of the Todo
-                <input type="checkbox" name="TodoItem" value=""/> <span> {} </span> // TODO: The object in the brackets must be the content of the todo from props or state unclear
-                <button> Remove </button>
-
-            
+                <input type="checkbox" name="TodoItem" value={this.props.id}/> 
+                <div>
+                    <span> {this.props.created_at} </span>
+                    <span> {this.props.content} </span>
+                     // TODO: The object in the brackets must be the content of the todo from props or state unclear
+                </div>
+                <button> Remove </button>     
         </div>
-        );
+    );
 }
 
 class List extends React.Component {
     // Renders on a timer all todo list from server
+    //TODO find out where todo in funciton argument comes from
+    render(){
+        var  todoNodes = this.props.datat.map(function(todo)
+            return(
+                <Todo
+                    content={todo.id}
+                    created_at={todo.created_at}
+                    key={todo.id}
+                    );
+        );
+    
+    }
 }
 
 class Application extends React.Component {
