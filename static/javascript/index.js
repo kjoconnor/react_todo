@@ -8,30 +8,24 @@ class NewTodoForm extends React.Component {
         super(props);
         this.state = {value: ''};
 
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
-    }
+   
 
     handleSubmit(event) {
         event.preventDefault();
+
         let newTodo = this.state.value;
+
         if (!newTodo){
             return;
-        } else {
+        } 
 
-            //Clear the input area
-            this.setState({value: ""});
-
-        }
-
-        //TODO: 
-        //Send this to Server to save in DB
-        // Update Todo list with new Todo
-
+        this.props.onNewTodoSubmit({ value: value });
+        this.setState({
+            value: ''
+        });
     }
 
     render(){
@@ -39,7 +33,7 @@ class NewTodoForm extends React.Component {
             <form onSubmit={this.handleSubmit}>
 
                 <label> The List Grows:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    <input type="text" value={this.state.value} onChange={this.setValue.bind(this, 'value')handleChange} />
                 </label>
 
                 <input type ="submit" value="Add" />  
@@ -56,7 +50,7 @@ function Todo(props) {
         <div className="todo">
             
                 //TODO: value must be the id of the Todo
-                <input type="checkbox" name="TodoItem" value={this.props.id}/> 
+                <input type="checkbox" name="TodoItem" value={this.props.key}/> 
                 <div>
                     <span> {this.props.created_at} </span>
                     <span> {this.props.content} </span>
@@ -74,10 +68,18 @@ class List extends React.Component {
         var  todoNodes = this.props.datat.map(function(todo)
             return(
                 <Todo
-                    content={todo.id}
+                    content={todo.content}
                     created_at={todo.created_at}
                     key={todo.id}
-                    );
+                >
+                </Todo>
+            );
+        );
+
+        return(
+            <div className="list">
+                {todoNodes}
+            </div>
         );
     
     }
@@ -85,6 +87,55 @@ class List extends React.Component {
 
 class Application extends React.Component {
     // returns a div with NewTodoForm and List in it
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: []};
+
+        this.handleRemoveTodo = this.handleRemoveTodo.bind(this);
+        this.checkMarked = this.checkMarked.bind(this);
+    }
+
+    handleRemoveTodo(id) {
+        //onclick run this and send id to the server to be removed and remove it from view
+        var data = this.state.data;
+        data = data.
+    }
+
+    checkMarked(event) {
+        // do i need to make the box checked? 
+        
+    }
+
+       
+    handleTodoSubmit(todo) {
+
+
+        $.ajax({
+            url: '/todo'
+            dataType: 'json',
+            type: 'POST',
+            data: todo,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+        });
+    
+    },
+
+    render(){
+        return(
+            <div className="application">
+                <NewTodoForm onNewTodoSubmit={this.handleTodoSubmit} />
+                <List data={this.state.data} />
+
+        );
+
+    }
+    }
+
+
 }
 
 ReactDom.render(<Application />, document.getElementById('content'));
