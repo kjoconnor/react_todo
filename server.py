@@ -27,21 +27,25 @@ app.secret_key = "pouring monday"
 
 @app.route('/')
 def index():
-    """ Render index.html """
-    
+    """Render index.html"""
+    return render_template("index.html")
 
+
+@app.route('/todo')
+def intial_todo():
+    """ Send Intial Todos from DB to render opening page """
+    
     todos = gather_all_todos_from_db()
-    if todos:
-        # TODO potentially have to break up objects into different format
-        todo_array = []
-        for todo in todos:
-            todo_array.append(format_todo(todo))
-
-        return render_template("index.html", todos=todo_array)
-    else:
-        return render_template("index.html", todos="")
-
     
+    todo_array = []
+    for todo in todos:
+        todo_array.append(format_todo(todo))
+
+    print todo_array, "THIS IS THE TODO_ARRAY PRINTING"
+
+    return jsonify(todo_array)
+
+
 @app.route('/todo', methods=['POST'])
 def new_todo():
     """ Add a new todo to the DB return all todo to javascript """

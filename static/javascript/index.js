@@ -1,42 +1,35 @@
 var Application = React.createClass ({
     
-
     getInitialState: function() {
 
-        var todos = document.getElementById("content").getAttribute("value");
-
-        if (!todos){
-
-            todo_array = [];
-
-        }else{
-
-            var todo_array = [];
-
-            for (var i=0; i < todos.length; i++){
-                todo_array.push(todos[i]);
-            }
-
-        };
-
-        console.log("todo", typeof todos, todos);
-
         return {
-            data: todo_array,
+            data: [],
             content: ""
         };
 
     },
 
+    loadServerDBTodos: function() {
+        console.log("loadServerDBTodos is running");
+        $.ajax({
+            url: "/todo",
+            dataType: 'json',
+            cache: false,
+            success: function(response) {
+                this.setState({data: response});
+                console.log(this.state.data);
+            }.bind(this),
+        });
+    },
 
+    componentDidMount: function(){
+        console.log("componentDidMount is running");
+        this.loadServerDBTodos();
+
+    },
+    
     handleSubmit: function(content) {
         console.log("content from new todo: ", content);
-
-        var previous_todo = this.state.data;
-
-        previous_todo.push(content);
-
-        console.log(previous_todo);
 
         $.ajax({
             url: "/todo",
@@ -58,6 +51,7 @@ var Application = React.createClass ({
 
     render: function() {
         console.log("in Application render");
+        console.log("data", this.state.data)
         return (
             <div className="application">
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
@@ -125,14 +119,16 @@ var List = React.createClass ({
     
     render: function() {
 
-        var createTodos = this.props.todos.map(function(todo) {
-            return <div className="todo" key={todo.id}> {todo.content} </div>;
-        });
-        console.log(createTodos);
-        return (
-            <div className="list">
-                <ul>{createTodos}</ul>
-            </div>
+        return(
+            <ul className='list'> {
+                this.props.todos.map(todo => {
+                    return <li className='listItem' todo = {todo} key= {todo.id}>
+                        {todo.created_at}
+                        {todo.content}
+                     </li>
+                })
+            }
+            </ul>
         );
     }
 });
