@@ -1,39 +1,66 @@
-class NewTodoForm extends React.Component {
+var Application = React.createClass ({
+    
 
-    NewTodoForm.propTypes = {
-        value: React.PropTypes.string
-    };
+    getInitialState: function() {
+        return {
+            data: [],
+            content: ""
+        };
 
-    constructor(props) {
-        super(props);
-        this.state = {value: ''};
+    },
 
-        this.handleSubmit = this.handleSubmit.bind(this);
+
+    handleSubmit: function(content) {
+        console.log("content from new todo: ", content);
+
+        var previous_todo = this.state.data;
+
+        previous_todo.push(content);
+
+        console.log(previous_todo);
+
+        this.setState({data: previous_todo});
+
+    
+    },
+
+    render: function() {
+        console.log("in Application render");
+        return (
+            <div className="application">
+                <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
+            </div>
+
+        );
+
     }
 
-   
+});
 
-    handleSubmit(event) {
+var NewTodoForm = React.createClass ({
+
+    handleSubmit: function(event) {
         event.preventDefault();
 
-        let newTodo = this.state.value;
+        var content = ReactDOM.findDOMNode(this.refs.content).value;
 
-        if (!newTodo){
+        if (!content){
             return;
         } 
 
-        this.props.onNewTodoSubmit({ value: value });
-        this.setState({
-            value: ''
-        });
-    }
+        this.props.onNewTodoSubmit(content);
 
-    render(){
-        return(
-            <form onSubmit={this.handleSubmit}>
+        ReactDOM.findDOMNode(this.refs.content).value = "";
+
+    },
+
+    render: function() {
+        return (
+
+            <form className= "todoForm" onSubmit={this.handleSubmit}>
 
                 <label> The List Grows:
-                    <input type="text" value={this.state.value} onChange={this.setValue.bind(this, 'value')handleChange} />
+                    <input type="text" ref="content" />
                 </label>
 
                 <input type ="submit" value="Add" />  
@@ -42,100 +69,95 @@ class NewTodoForm extends React.Component {
         );
     }
 
-}
+});
 
-function Todo(props) {
-    //What a basic Todo from the Database will look like
-    return(
-        <div className="todo">
+// /// TODO: Handle funciton and creation of the checkbox
+// var Checkbox = React.createClass({
+//     getInitialState: function() {
+//         return {
+//             isChecked: false,
+
+//         };
+
+//     }, 
+
+//     toggleCheckboxChange: function() {
+//         const { handleCheckboxChange, label } = this.props; 
+
+//         this.setState(({ isChecked }) => ({
+
+//             isChecked: !isChecked,
+//         }));
+
+//         handleCheckboxChange(label);
+//     },
+
+//     render: function() {
+//         const { label } = this.props;
+//         const { isChecked } = this.state;
+
+//         return (
+//             <div className="checkbox">
+//                 <label>
+//                     <input type="checkbox" value={ label } checked={isChecked} onChange={this.toggleCheckboxChange} >
+
+//                     {label}
+//                 </label>
+//             </div>
+//         );
+//     }
+
+
+
+
+// });
+/// Some variation here check input feild for confirmaiton 
+// var Todo = React.createClass ({
+    
+//     //What a basic Todo from the Database will look like
+//     render: function() {
+//         return (
+//             <div className="todo">
             
-                //TODO: value must be the id of the Todo
-                <input type="checkbox" name="TodoItem" value={this.props.key}/> 
-                <div>
-                    <span> {this.props.created_at} </span>
-                    <span> {this.props.content} </span>
-                     // TODO: The object in the brackets must be the content of the todo from props or state unclear
-                </div>
-                <button> Remove </button>     
-        </div>
-    );
-}
+//                 //TODO: value must be the id of the Todo Do I need these be in the form as well or can they just come from the response? 
+//                 <input type="checkbox" name="TodoItem" value={this.props.key}/> 
+//                 <div>
+//                     <span> {this.props.created_at} </span>
+//                     <span> {this.props.content} </span>
+//                     {this.props.children.toString}
+//                      // TODO: The object in the brackets must be the content of the todo from props or state unclear
+//                 </div>
+//                 <button> Remove </button>     
+//             </div>
+//         );
+//     }
+// });
 
-class List extends React.Component {
-    // Renders on a timer all todo list from server
-    //TODO find out where todo in funciton argument comes from
-    render(){
-        var  todoNodes = this.props.datat.map(function(todo)
-            return(
-                <Todo
-                    content={todo.content}
-                    created_at={todo.created_at}
-                    key={todo.id}
-                >
-                </Todo>
-            );
-        );
+// var List = React.createClass ({
+//     // Renders on a timer all todo list from server
+//     //TODO find out where todo in funciton argument comes from
+//     render: function() {
+//         var  todoNodes = this.props.data.map(function(todo) {
+//             return (
+//                 <Todo
+//                     content={todo.content}
+//                     created_at={todo.created_at}
+//                     key={todo.id}
+//                 >
+//                 </Todo>
+//             );
+//         });
 
-        return(
-            <div className="list">
-                {todoNodes}
-            </div>
-        );
-    
-    }
-}
-
-class Application extends React.Component {
-    // returns a div with NewTodoForm and List in it
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: []};
-
-        this.handleRemoveTodo = this.handleRemoveTodo.bind(this);
-        this.checkMarked = this.checkMarked.bind(this);
-    }
-
-    handleRemoveTodo(id) {
-        //onclick run this and send id to the server to be removed and remove it from view
-        var data = this.state.data;
-        data = data.
-    }
-
-    checkMarked(event) {
-        // do i need to make the box checked? 
-        
-    }
-
-       
-    handleTodoSubmit(todo) {
+//         return (
+//             <div className="list">
+//                 {todoNodes}
+//             </div>
+//         );
+//     }
+// });
 
 
-        $.ajax({
-            url: '/todo'
-            dataType: 'json',
-            type: 'POST',
-            data: todo,
-            success: function(data) {
-                this.setState({data: data});
-            }.bind(this),
-        });
-    
-    },
-
-    render(){
-        return(
-            <div className="application">
-                <NewTodoForm onNewTodoSubmit={this.handleTodoSubmit} />
-                <List data={this.state.data} />
-
-        );
-
-    }
-    }
 
 
-}
 
-ReactDom.render(<Application />, document.getElementById('content'));
+ReactDOM.render(<Application />, document.getElementById("content"));

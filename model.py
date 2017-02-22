@@ -25,14 +25,14 @@ class AwareDateTime(db.TypeDecorator):
     def process_result_value(self, value, dialect):
         return value.replace(tzinfo=pytz.utc)
 
+#TODO: uncomment when have user sign-in
+# class User(db.Model):
+#     __tablename__ = "users"
 
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(150), nullable=False)
-    facebook_id = db.Column(db.String(30), nullable=False, unique=True)
+#     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     email = db.Column(db.String(150), nullable=False)
+#     facebook_id = db.Column(db.String(30), nullable=False, unique=True)
 
 
 class Todo(db.Model):
@@ -40,9 +40,10 @@ class Todo(db.Model):
 
     id = db.Column(db.Integer, primary_key = True,
                                 autoincrement = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    #TODO: uncomment when have user sign-in
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     conent = db.Column(db.Text, nullable=False)
-    created_at = db.Column(AwareDateTime, default=db.func.now(), nullable=False, onupdate-datetime.datetime.now)
+    created_at = db.Column(AwareDateTime, default=db.func.now(), nullable=False, onupdate=datetime.datetime.now)
 
 
 

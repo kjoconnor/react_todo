@@ -23,12 +23,26 @@ ma = Marshmallow(app)
 
 app.secret_key = "pouring monday"
 
+@app.route('/')
+def index():
+    """ Render index.html """
+    print "THIS IS THE SERVER SPEAKING"
+    todos = gather_all_todos_from_db()
 
+    return render_template("index.html")
+
+    
 @app.route('/todo', methods=['POST'])
 def new_todo():
     """ Add a new todo to the DB return all todo to javascript """
 
-    pass
+    content = request.form.get("content")
+
+    todo = commit_todo_to_db(content)
+
+    return jsonify(format_todo(todo))
+
+
 
 @app.route('/todo/<id>', methods=['DELETE'])
 def remove_todo():
