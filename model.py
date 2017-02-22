@@ -42,7 +42,7 @@ class Todo(db.Model):
                                 autoincrement = True)
     #TODO: uncomment when have user sign-in
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    conent = db.Column(db.Text, nullable=False)
+    content = db.Column(db.Text, nullable=False)
     created_at = db.Column(AwareDateTime, default=db.func.now(), nullable=False, onupdate=datetime.datetime.now)
 
 

@@ -24,13 +24,13 @@ def commit_todo_to_db(content):
 
     todo = Todo(content=content)
 
-    db.session.add(note)
+    db.session.add(todo)
     db.session.commit()
 
     return todo
 
 ##### Used in many routes ####
-def formate_todo(todo):
+def format_todo(todo):
     return {
         "content": todo.content,
         "id": todo.id,

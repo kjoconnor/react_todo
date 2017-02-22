@@ -11,6 +11,8 @@ from helper_functions import *
 #for searlizing sqlalchemy objects
 from flask_marshmallow import Marshmallow
 
+from jinja2 import StrictUndefined
+
 #for facebook sign in
 import facebook
 #for environmental variables for facebook API
@@ -26,10 +28,13 @@ app.secret_key = "pouring monday"
 @app.route('/')
 def index():
     """ Render index.html """
-    print "THIS IS THE SERVER SPEAKING"
-    todos = gather_all_todos_from_db()
+    
 
-    return render_template("index.html")
+    todos = gather_all_todos_from_db()
+    if todos:
+        return render_template("index.html", todos=todos)
+    else:
+        return render_template("index.html", todos="")
 
     
 @app.route('/todo', methods=['POST'])
@@ -37,6 +42,8 @@ def new_todo():
     """ Add a new todo to the DB return all todo to javascript """
 
     content = request.form.get("content")
+
+    print "THIS IS WHAT CONTENT IS WHEN IT ARRIVES FROM JS", content, type(content)
 
     todo = commit_todo_to_db(content)
 

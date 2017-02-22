@@ -2,8 +2,27 @@ var Application = React.createClass ({
     
 
     getInitialState: function() {
+
+        var todos = document.getElementById("content").getAttribute("value");
+
+        if (!todos){
+
+            todo_array = [];
+
+        }else{
+
+            var todo_array = [];
+
+            for (var i=0; i < todos.length; i++){
+                todo_array.push(todos[i]);
+            }
+
+        };
+
+        console.log("todo", typeof todos, todos);
+
         return {
-            data: [],
+            data: todo_array,
             content: ""
         };
 
@@ -19,10 +38,21 @@ var Application = React.createClass ({
 
         console.log(previous_todo);
 
-        this.setState({data: previous_todo});
+        $.ajax({
+            url: "/todo",
+            dataType: 'json',
+            type: 'POST',
+            data: { content: content },
+            success: function(response) {
+                console.log("response from handleSumbit", typeof response, response);
+                this.setState({data: response});
+            }.bind(this)
+        });
 
+        this.setState({data: previous_todo});
     
     },
+
 
     render: function() {
         console.log("in Application render");
@@ -71,90 +101,50 @@ var NewTodoForm = React.createClass ({
 
 });
 
-// /// TODO: Handle funciton and creation of the checkbox
-// var Checkbox = React.createClass({
-//     getInitialState: function() {
-//         return {
-//             isChecked: false,
 
-//         };
-
-//     }, 
-
-//     toggleCheckboxChange: function() {
-//         const { handleCheckboxChange, label } = this.props; 
-
-//         this.setState(({ isChecked }) => ({
-
-//             isChecked: !isChecked,
-//         }));
-
-//         handleCheckboxChange(label);
-//     },
-
-//     render: function() {
-//         const { label } = this.props;
-//         const { isChecked } = this.state;
-
-//         return (
-//             <div className="checkbox">
-//                 <label>
-//                     <input type="checkbox" value={ label } checked={isChecked} onChange={this.toggleCheckboxChange} >
-
-//                     {label}
-//                 </label>
-//             </div>
-//         );
-//     }
-
-
-
-
-// });
-/// Some variation here check input feild for confirmaiton 
-// var Todo = React.createClass ({
+var Todo = React.createClass ({
     
-//     //What a basic Todo from the Database will look like
-//     render: function() {
-//         return (
-//             <div className="todo">
+    //What a basic Todo from the Database will look like
+    render: function() {
+        return (
+            <div className="todo">
             
-//                 //TODO: value must be the id of the Todo Do I need these be in the form as well or can they just come from the response? 
-//                 <input type="checkbox" name="TodoItem" value={this.props.key}/> 
-//                 <div>
-//                     <span> {this.props.created_at} </span>
-//                     <span> {this.props.content} </span>
-//                     {this.props.children.toString}
-//                      // TODO: The object in the brackets must be the content of the todo from props or state unclear
-//                 </div>
-//                 <button> Remove </button>     
-//             </div>
-//         );
-//     }
-// });
+                //TODO: value must be the id of the Todo Do I need these be in the form as well or can they just come from the response? 
+                <input type="checkbox" name="TodoItem" value={this.props.key}/> 
+                <div>
+                    <span> {this.props.created_at} </span>
+                    <span> {this.props.content} </span>
+                    {this.props.children.toString}
+                     // TODO: The object in the brackets must be the content of the todo from props or state unclear
+                </div>
+                <button> Remove </button>     
+            </div>
+        );
+    }
+});
 
-// var List = React.createClass ({
-//     // Renders on a timer all todo list from server
-//     //TODO find out where todo in funciton argument comes from
-//     render: function() {
-//         var  todoNodes = this.props.data.map(function(todo) {
-//             return (
-//                 <Todo
-//                     content={todo.content}
-//                     created_at={todo.created_at}
-//                     key={todo.id}
-//                 >
-//                 </Todo>
-//             );
-//         });
+var List = React.createClass ({
+    // Renders on a timer all todo list from server
+    //TODO find out where todo in funciton argument comes from
+    render: function() {
+        var  todoNodes = this.props.data.map(function(todo) {
+            return (
+                <Todo
+                    content={todo.content}
+                    created_at={todo.created_at}
+                    key={todo.id}
+                >
+                </Todo>
+            );
+        });
 
-//         return (
-//             <div className="list">
-//                 {todoNodes}
-//             </div>
-//         );
-//     }
-// });
+        return (
+            <div className="list">
+                {todoNodes}
+            </div>
+        );
+    }
+});
 
 
 
