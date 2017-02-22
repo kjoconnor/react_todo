@@ -106,11 +106,15 @@ var Todo = React.createClass ({
         console.log(this.props.todos);
 
         return (
-            <li className="todo">
+            <div>
+            <li className="todo" key= {this.props.todo.id}>
 
-                {this.props.children}
-        
+                {this.props.todo.created_at}
+                {this.props.todo.content}
+                <button key= {this.props.todo.id}> Remove </button>
             </li>
+            <br />
+            </div>
         );
     }
 });
@@ -118,16 +122,15 @@ var Todo = React.createClass ({
 var List = React.createClass ({
     
     render: function() {
+        var todo = function(itemContent) {
+            return (
+                <Todo todo={itemContent}></Todo>
+            );
+        };
 
         return(
-            <ul className='list'> {
-                this.props.todos.map(todo => {
-                    return <li className='listItem' todo = {todo} key= {todo.id}>
-                        {todo.created_at}
-                        {todo.content}
-                     </li>
-                })
-            }
+            <ul className='list'> 
+                { this.props.todos.map(todo) }
             </ul>
         );
     }
