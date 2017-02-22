@@ -38,7 +38,7 @@ var Application = React.createClass ({
             data: { content: content },
             success: function(response) {
                 console.log("response from handleSumbit", typeof response, response);
-                var allTodos= this.state.data.concat([response]);
+                let allTodos = this.state.data.concat([response]);
                 this.setState({data: allTodos});
                 console.log(data);
             }.bind(this)
@@ -48,6 +48,18 @@ var Application = React.createClass ({
     
     },
 
+    handleDelete: function(todo){
+        console.log("in handleDelete in Application");
+
+        let allTodos = this.state.data;
+        console.log("allTodos");
+
+        if (allTodos.indexOf(todo) > -1) {
+            allTodos.splice(allTodos.indexOf(todo), 1);
+        }
+
+        this.setState({data: allTodos});
+    },
 
     render: function() {
         console.log("in Application render");
@@ -101,43 +113,45 @@ var NewTodoForm = React.createClass ({
 
 var Todo = React.createClass ({
     
+    
     render: function() {
-
-        console.log(this.props.todos);
 
         return (
             <div>
-            <li className="todo" key= {this.props.todo.id}>
+            <li className="todo" todo={this.props.todo} key= {this.props.todo.id}>
 
                 {this.props.todo.created_at}
                 {this.props.todo.content}
-                <button key= {this.props.todo.id}> Remove </button>
+                <button key={this.props.todo.id} onClick={this.handleDelete.bind(this, this.props.todo)} > Remove </button>
             </li>
             <br />
             </div>
         );
+
     }
+
+    
 });
 
+
+
 var List = React.createClass ({
-    
+
+
     render: function() {
         var todo = function(itemContent) {
             return (
-                <Todo todo={itemContent}></Todo>
+                <Todo todo={itemContent} onRemove={this.handleDelete.bind(this)}></Todo>
             );
         };
 
         return(
             <ul className='list'> 
-                { this.props.todos.map(todo) }
+                { this.props.todos.map(todo, this) }
             </ul>
         );
     }
 });
-
-
-
 
 
 ReactDOM.render(<Application />, document.getElementById("content"));
