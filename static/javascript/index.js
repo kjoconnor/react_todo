@@ -45,7 +45,9 @@ var Application = React.createClass ({
             data: { content: content },
             success: function(response) {
                 console.log("response from handleSumbit", typeof response, response);
-                this.setState({data: response});
+                var allTodos= this.state.data.concat([response]);
+                this.setState({data: allTodos});
+                console.log(data);
             }.bind(this)
         });
 
@@ -59,6 +61,7 @@ var Application = React.createClass ({
         return (
             <div className="application">
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
+                <List todos={this.state.data} />
             </div>
 
         );
@@ -104,43 +107,31 @@ var NewTodoForm = React.createClass ({
 
 var Todo = React.createClass ({
     
-    //What a basic Todo from the Database will look like
     render: function() {
+
+        console.log(this.props.todos);
+
         return (
-            <div className="todo">
-            
-                //TODO: value must be the id of the Todo Do I need these be in the form as well or can they just come from the response? 
-                <input type="checkbox" name="TodoItem" value={this.props.key}/> 
-                <div>
-                    <span> {this.props.created_at} </span>
-                    <span> {this.props.content} </span>
-                    {this.props.children.toString}
-                     // TODO: The object in the brackets must be the content of the todo from props or state unclear
-                </div>
-                <button> Remove </button>     
-            </div>
+            <li className="todo">
+
+                {this.props.children}
+        
+            </li>
         );
     }
 });
 
 var List = React.createClass ({
-    // Renders on a timer all todo list from server
-    //TODO find out where todo in funciton argument comes from
+    
     render: function() {
-        var  todoNodes = this.props.data.map(function(todo) {
-            return (
-                <Todo
-                    content={todo.content}
-                    created_at={todo.created_at}
-                    key={todo.id}
-                >
-                </Todo>
-            );
-        });
 
+        var createTodos = this.props.todos.map(function(todo) {
+            return <div className="todo" key={todo.id}> {todo.content} </div>;
+        });
+        console.log(createTodos);
         return (
             <div className="list">
-                {todoNodes}
+                <ul>{createTodos}</ul>
             </div>
         );
     }

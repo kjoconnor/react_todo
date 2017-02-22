@@ -32,7 +32,12 @@ def index():
 
     todos = gather_all_todos_from_db()
     if todos:
-        return render_template("index.html", todos=todos)
+        # TODO potentially have to break up objects into different format
+        todo_array = []
+        for todo in todos:
+            todo_array.append(format_todo(todo))
+
+        return render_template("index.html", todos=todo_array)
     else:
         return render_template("index.html", todos="")
 
