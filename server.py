@@ -61,10 +61,16 @@ def new_todo():
 
 
 @app.route('/todo/<id>', methods=['DELETE'])
-def remove_todo():
-    """ Remove a todo by id from the DB return nothing """
+def remove_todo(id):
+    """ Remove a todo by id from the DB return json of nothing """
 
-    pass
+    id = request.form.get("id")
+
+    print "THIS IS WHAT THE ID TO BE DELTED IS", id, type(id)
+
+    response = remove_todo_from_db(id)
+
+    return jsonify({response: response})
 
 @app.route('/todo/check_mark/<id>', methods=['PUTS'])
 def check_mark_todo():

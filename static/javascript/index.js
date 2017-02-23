@@ -48,15 +48,27 @@ var Application = React.createClass ({
 
     handleDelete: function(todo){
         console.log("in handleDelete in Application");
+        console.log("todo", todo);
+        var id = todo.id
+        console.log("id", typeof id, id);
+        $.ajax({
+            url: "/todo/" + id,
+            dataType: 'json',
+            type: 'DELETE',
+            data: { id : id },
+            success: function(response) {
+                console.log("response from handleDelete", typeof response, response);
+                var allTodos = this.state.data;
+                console.log("allTodos", allTodos);
 
-        let allTodos = this.state.data;
-        console.log("allTodos");
+                if (allTodos.indexOf(todo) > -1) {
+                    allTodos.splice(allTodos.indexOf(todo), 1);
+                }
 
-        if (allTodos.indexOf(todo) > -1) {
-            allTodos.splice(allTodos.indexOf(todo), 1);
-        }
+                this.setState({data: allTodos});   
+            }.bind(this)
+        });
 
-        this.setState({data: allTodos});
     },
 
     render: function() {
@@ -112,7 +124,7 @@ var Checkbox = React.createClass({
 
     render: function() {
         return(
-            <input type="checkbox" todo={this.props.todo} onChange={this.props.ontoggleCheckbox} />
+            <input type="checkbox" todo={this.props.todo}  />
         );
     }
 });
@@ -125,7 +137,6 @@ var Todo = React.createClass ({
         return (
             
             <div className="todo" todo={this.props.todo} key= {this.props.todo.id}>
-                < Checkbox todo={this.props.todo} ontoggleCheckbox={this.handleToggle.bind(this, itemContent)} />
                 {this.props.todo.created_at}
                 {this.props.todo.content}
                 <button key={this.props.todo.id} onClick={this.props.onDelete} > Remove </button>

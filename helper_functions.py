@@ -29,6 +29,17 @@ def commit_todo_to_db(content):
 
     return todo
 
+##### /todo/<id> #########
+def remove_todo_from_db(id):
+    """ Take in todo id and remove it from DB 
+    Return None
+    """
+
+    Todo.query.filter_by(id=id).delete()
+    db.session.commit()
+
+    return
+
 ##### Used in many routes ####
 def format_todo(todo):
     return {
