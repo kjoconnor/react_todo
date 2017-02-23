@@ -39,12 +39,10 @@ var Application = React.createClass ({
             success: function(response) {
                 console.log("response from handleSumbit", typeof response, response);
                 let allTodos = this.state.data.concat([response]);
+                console.log("allTodos", allTodos);
                 this.setState({data: allTodos});
-                console.log(data);
             }.bind(this)
         });
-
-        this.setState({data: previous_todo});
     
     },
 
@@ -67,7 +65,7 @@ var Application = React.createClass ({
         return (
             <div className="application">
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
-                <List todos={this.state.data} />
+                <List todos={this.state.data} onDelete={this.handleDelete}/>
             </div>
 
         );
@@ -110,21 +108,28 @@ var NewTodoForm = React.createClass ({
 
 });
 
+var Checkbox = React.createClass({
+
+    render: function() {
+        return(
+            <input type="checkbox" todo={this.props.todo} onChange={this.props.ontoggleCheckbox} />
+        );
+    }
+});
 
 var Todo = React.createClass ({
     
-    
+
     render: function() {
 
         return (
-            <div>
-            <li className="todo" todo={this.props.todo} key= {this.props.todo.id}>
-
+            
+            <div className="todo" todo={this.props.todo} key= {this.props.todo.id}>
+                < Checkbox todo={this.props.todo} ontoggleCheckbox={this.handleToggle.bind(this, itemContent)} />
                 {this.props.todo.created_at}
                 {this.props.todo.content}
-                <button key={this.props.todo.id} onClick={this.handleDelete.bind(this, this.props.todo)} > Remove </button>
-            </li>
-            <br />
+                <button key={this.props.todo.id} onClick={this.props.onDelete} > Remove </button>
+            
             </div>
         );
 
@@ -136,19 +141,24 @@ var Todo = React.createClass ({
 
 
 var List = React.createClass ({
-
+    handleDelete: function(todo){
+        console.log("in handleDelete in List");
+        console.log("todo", todo);
+        this.props.onDelete(todo);
+    },
 
     render: function() {
         var todo = function(itemContent) {
             return (
-                <Todo todo={itemContent} onRemove={this.handleDelete.bind(this)}></Todo>
+                
+                <Todo todo={itemContent} onDelete={this.handleDelete.bind(this, itemContent)}></Todo>
             );
         };
 
         return(
-            <ul className='list'> 
+            <div className='list'> 
                 { this.props.todos.map(todo, this) }
-            </ul>
+            </div>
         );
     }
 });
