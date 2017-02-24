@@ -24,6 +24,7 @@ var Application = React.createClass ({
     componentDidMount: function(){
 
         this.loadServerDBTodos();
+
     },
     
     handleSubmit: function(content) {
@@ -60,12 +61,7 @@ var Application = React.createClass ({
 
             }.bind(this)
         });
-    },
-
-    handleCheckBoxs:function() {
-        console.log("This will have to run when loading page so boxs are checked!");
     }, 
-
 
     handleCheckboxToggle: function(todo) {
 
@@ -96,7 +92,6 @@ var Application = React.createClass ({
                     
                     this.state.data[checkedTodoIndex].isChecked = updatedCheckValue;
                     this.forceUpdate();
-                
                 }
             }.bind(this)
         });
@@ -154,9 +149,18 @@ var NewTodoForm = React.createClass ({
 
 var Checkbox = React.createClass({
 
+    
     render: function() {
+
+        var checkValue = this.props.todo.isChecked;
+        if (checkValue === "true") {
+            var checkValue = true;
+        } else {
+            var checkValue = false;
+        }
+
         return(
-            <input type="checkbox" onChange={this.props.onCheck} />
+            <input type="checkbox" checked = {checkValue} onChange={this.props.onCheck} />
         );
     }
 });
@@ -176,7 +180,7 @@ var Todo = React.createClass ({
             
             <div className="todo" todo={this.props.todo} key= {this.props.todo.id}>
                 
-                < Checkbox  onCheck={this.handleCheckboxToggle.bind(this, this.props.todo)} />
+                <Checkbox  onCheck={this.handleCheckboxToggle.bind(this, this.props.todo)} todo={this.props.todo} />
 
                 {this.props.todo.created_at}
 
