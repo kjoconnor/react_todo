@@ -41,8 +41,6 @@ def intial_todo():
     for todo in todos:
         todo_array.append(format_todo(todo))
 
-    print todo_array, "THIS IS THE TODO_ARRAY PRINTING"
-
     return jsonify(todo_array)
 
 
@@ -52,12 +50,9 @@ def new_todo():
 
     content = request.form.get("content")
 
-    print "THIS IS WHAT CONTENT IS WHEN IT ARRIVES FROM JS", content, type(content)
-
     todo = commit_todo_to_db(content)
 
     return jsonify(format_todo(todo))
-
 
 
 @app.route('/todo/<id>', methods=['DELETE'])
@@ -66,11 +61,10 @@ def remove_todo(id):
 
     id = request.form.get("id")
 
-    print "THIS IS WHAT THE ID TO BE DELTED IS", id, type(id)
-
     response = remove_todo_from_db(id)
 
     return jsonify({response: response})
+
 
 @app.route('/todo/check_mark/<id>', methods=['PUTS'])
 def check_mark_todo():
