@@ -29,7 +29,7 @@ def commit_todo_to_db(content):
 
     return todo
 
-##### /todo/<id> #########
+##### /todo/<id> DELETE #########
 def remove_todo_from_db(id):
     """ Take in todo id and remove it from DB 
     Return None
@@ -40,10 +40,30 @@ def remove_todo_from_db(id):
 
     return
 
+##### /todo/<id> PUT #######
+def get_or_abort(model, object_id, code=404):
+    """ Get an object with given id or an abort error with 404 default"""
+
+    result = model.query.get(object_id)
+
+    return result or abort(code)
+
+def add_checkmark_to_db(id, isChecked):
+    """ Take in todo id and add checkmark True in DB 
+    Return None
+    """
+    todo = get_or_abort(Todo, id)
+    todo.isChecked = isChecked
+    
+    db.session.commit()
+
+    
+
 ##### Used in many routes ####
 def format_todo(todo):
     return {
         "content": todo.content,
         "id": todo.id,
-        "created_at": todo.created_at
+        "created_at": todo.created_at,
+        "isChecked" : todo.isChecked
     }

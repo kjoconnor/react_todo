@@ -1,3 +1,4 @@
+
 var Application = React.createClass ({
     
     getInitialState: function() {
@@ -21,7 +22,7 @@ var Application = React.createClass ({
     },
 
     componentDidMount: function(){
-        
+
         this.loadServerDBTodos();
     },
     
@@ -61,13 +62,56 @@ var Application = React.createClass ({
         });
     },
 
+    handleCheckBoxs:function() {
+        console.log("This will have to run when loading page so boxs are checked!");
+    }, 
+
+
+    handleCheckboxToggle: function(todo) {
+
+        var id = todo.id;
+        var checkedTodoIndex = this.state.data.indexOf(todo);
+        
+        var isChecked = this.state.data[checkedTodoIndex].isChecked;
+        console.log(checkedTodoIndex, this.state.data[checkedTodoIndex], isChecked);
+
+        if (isChecked === "false") {
+            var updatedCheckValue = "true";
+        } else {
+            var updatedCheckValue = "false";
+        }
+
+        console.log(updatedCheckValue, typeof updatedCheckValue);
+
+        $.ajax({
+            url: "todo/" + id,
+            dataType: 'json',
+            type: 'PUT',
+            data: { 
+                id : id,
+                isChecked : updatedCheckValue },
+            success: function(response) {
+                 
+                if (checkedTodoIndex !== -1) {
+                    
+                    this.state.data[checkedTodoIndex].isChecked = updatedCheckValue;
+                    this.forceUpdate();
+                
+                }
+            }.bind(this)
+        });
+
+    },
+
     render: function() {
         
         return (
+
             <div className="application">
 
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
-                <List todos={this.state.data} onDelete={this.handleDelete}/>
+
+                <List todos={this.state.data} onDelete={this.handleDelete} onCheck={this.handleCheckboxToggle} />
 
             </div>
         );
@@ -112,13 +156,19 @@ var Checkbox = React.createClass({
 
     render: function() {
         return(
-            <input type="checkbox" todo={this.props.todo} />
+            <input type="checkbox" onChange={this.props.onCheck} />
         );
     }
 });
 
 
 var Todo = React.createClass ({
+
+    handleCheckboxToggle: function(todo) {
+
+        this.props.onCheck(todo);
+
+    },
     
     render: function() {
 
@@ -126,7 +176,10 @@ var Todo = React.createClass ({
             
             <div className="todo" todo={this.props.todo} key= {this.props.todo.id}>
                 
+                < Checkbox  onCheck={this.handleCheckboxToggle.bind(this, this.props.todo)} />
+
                 {this.props.todo.created_at}
+
                 {this.props.todo.content}
                
                 <button key={this.props.todo.id} onClick={this.props.onDelete} > Remove </button>
@@ -146,15 +199,23 @@ var List = React.createClass ({
         this.props.onDelete(todo);
     },
 
+    handleCheckboxToggle: function(todo) {
+
+        this.props.onCheck(todo);
+
+    },
+    
+
     render: function() {
         var todo = function(itemContent) {
             return (
                 
-                <Todo todo={itemContent} onDelete={this.handleDelete.bind(this, itemContent)}></Todo>
+                <Todo todo={itemContent} onDelete={this.handleDelete.bind(this, itemContent)} onCheck={this.handleCheckboxToggle.bind(this, itemContent)}></Todo>
             );
         };
 
         return(
+
             <div className='list'> 
 
                 { this.props.todos.map(todo, this) }

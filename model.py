@@ -44,6 +44,7 @@ class Todo(db.Model):
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(AwareDateTime, default=db.func.now(), nullable=False, onupdate=datetime.datetime.now)
+    isChecked = db.Column(db.String, default='false', nullable=False)
 
 
 

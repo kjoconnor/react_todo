@@ -38,8 +38,10 @@ def intial_todo():
     todos = gather_all_todos_from_db()
     
     todo_array = []
-    for todo in todos:
-        todo_array.append(format_todo(todo))
+
+    if todos:
+        for todo in todos:
+            todo_array.append(format_todo(todo))
 
     return jsonify(todo_array)
 
@@ -57,20 +59,24 @@ def new_todo():
 
 @app.route('/todo/<id>', methods=['DELETE'])
 def remove_todo(id):
-    """ Remove a todo by id from the DB return json of nothing """
-
-    id = request.form.get("id")
+    """ Remove a todo by id from the DB return json of None """
 
     response = remove_todo_from_db(id)
 
     return jsonify({response: response})
 
 
-@app.route('/todo/check_mark/<id>', methods=['PUTS'])
-def check_mark_todo():
-    """ Checkmark a todo by id, update DB return nothing """
+@app.route('/todo/<id>', methods=['PUT'])
+def check_mark_todo(id):
+    """ Checkmark a todo by id, update DB Return None """
 
-    pass
+    isChecked = request.form.get("isChecked")
+
+    print "isChecked", type(isChecked), isChecked
+
+    response = add_checkmark_to_db(id, isChecked)
+
+    return jsonify({response: response})
 
 
 
