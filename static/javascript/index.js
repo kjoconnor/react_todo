@@ -1,4 +1,3 @@
-
 var Application = React.createClass ({
     
     getInitialState: function() {
@@ -221,7 +220,6 @@ var List = React.createClass ({
         return(
 
             <div className='list'> 
-
                 { this.props.todos.map(todo, this) }
 
             </div>
