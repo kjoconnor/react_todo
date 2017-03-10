@@ -1,13 +1,145 @@
+var googleAPIKey;
+var googleClientId;
+
+function grabAPIKey (){
+    $.ajax({
+        url: '/API',
+        type: 'GET',
+        success: returnAPIKey
+    });
+}
+
+function returnAPIKey(response) {
+    googleAPIKey = response.googleAPIKey;
+    googleClientId = response.googleClientId;
+
+    intializeGoogleAuth()
+}
+
+
+function intializeGoogleAuth(){
+        
+    console.log("intializeGoogleAuth is running")
+
+    var googleParams = {
+        apiKey : googleAPIKey, 
+        client_id : googleClientId, 
+        scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read',
+    discoveryDocs: ["https://people.googleapis.com/$discovery/rest?version=v1"]
+    }; 
+
+    gapi.auth2.init(googleParams).then(function () {
+        // Listen for sign-in state changes.
+        console.log("Trying to get init to run");
+        var auth = gapi.auth2.getAuthInstance();
+        console.log(auth.isSignedIn.get());
+        auth.isSignedIn.listen(handleUpdateSigninStatus);
+
+
+        // Handle the initial sign-in state.
+        handleUpdateSigninStatus(auth.isSignedIn.get());
+    });
+
+}
+
+
+function handleCallback(response) {
+
+    console.log("running handleCallback in App");
+
+    if(response['status']['signed_in']){ 
+        var request = gapi.client.plus.people.get(
+            {
+                'userId': 'me'
+            });
+        request.execute(function (resp){
+            var email = '';
+            if(resp['emails']){
+                for(i = 0; i < resp['emails'].length; i++){
+                    if(resp['emails'][i]['type'] == 'account'){
+                        email = resp['emails'][i]['value'];
+                    }
+                }
+            }
+
+           console.log(email);
+
+        });
+    } 
+}
+
+function handleUpdateSigninStatus(isSignedInVal) {
+    if(isSignedInVal){
+        makeApiCall();
+    }
+}
+
+function signInVerification(response){
+    console.log("response", response.signedIn);
+}
+
 var Application = React.createClass ({
-    
     getInitialState: function() {
 
         return {
             data: [],
-            content: ""
+            content: "",
+            isSignedIn: false
         };
     },
+////////sigin in
+     
+    handleSignIn: function() {
 
+        console.log("running handleSignIn in App");
+        
+        var myParams = {
+            'clientid' : googleClientId, //You need to set client id
+            'cookiepolicy' : 'single_host_origin',
+            'callback' : handleCallback, //callback function
+            'approvalprompt':'force',
+            'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
+            };
+        gapi.auth2.getAuthInstance().singIn(myParams);
+
+        var id_token = googleUser.getAuthResponse().id_token;
+        $.ajax({
+        url: '/session',
+        data: {"id_token" : id_token},
+        type: 'POST',
+        success: signInVerification
+    });
+
+
+    },
+
+    handleSignOut: function() {
+        gapi.auth2.getAuthInstance().signOut();
+        // location.reload();
+
+    },
+
+    addGoogleScriptTag: function (){
+
+        console.log("addGoogleScriptTag");
+
+        var scriptTag = document.createElement("script");
+
+        scriptTag.src = "https://apis.google.com/js/api:client.js";
+        scriptTag.async = "true";
+        scriptTag.defer = "true";
+
+        document.head.appendChild(scriptTag);
+
+        scriptTag.onload= function (){
+            console.log("about to run intializeGoogleAuth");
+            gapi.load('client:auth2', grabAPIKey);
+            
+        }
+    },
+
+
+//////////////// end google //////
     loadServerDBTodos: function() {
         
         $.ajax({
@@ -19,12 +151,15 @@ var Application = React.createClass ({
             }.bind(this),
         });
     },
-
-    componentDidMount: function(){
+    
+    componentDidMount: function() {
 
         this.loadServerDBTodos();
 
+        this.addGoogleScriptTag();
+        
     },
+
     
     handleSubmit: function(content) {
 
@@ -103,8 +238,9 @@ var Application = React.createClass ({
 
             <div className="application">
 
+                <LoginButton onSignIn={this.handleSignIn} onCallback={this.handleCallback} />
+                <LogoutButton onSignOut={this.handleSignOut} />
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
-
                 <List todos={this.state.data} onDelete={this.handleDelete} onCheck={this.handleCheckboxToggle} />
 
             </div>
@@ -112,6 +248,37 @@ var Application = React.createClass ({
     }
 });
 
+
+var LoginButton = React.createClass({
+
+  handleSignIn: function() {
+    console.log("handleSignIn LoginButton Componenet running"); // plus any other logic here
+
+  },
+
+  render: function() {
+    
+    return (
+       <div className="g-signin2" onClick={this.handleSignIn} onCallback={this.handleCallback}>Sign In With Google</div>
+    );
+  }
+
+});
+
+var LogoutButton = React.createClass({
+    handleSignOut: function() {
+        console.log("user signed out"); // plus any other logic here
+        this.props.onSignOut();
+
+  },
+
+  render: function() {
+
+    return (
+       <div onSignOut={this.handleSignOut}>Sign Out</div>
+    );
+  }
+});
 
 var NewTodoForm = React.createClass ({
 
@@ -192,7 +359,6 @@ var Todo = React.createClass ({
     }
     
 });
-
 
 
 var List = React.createClass ({
