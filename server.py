@@ -30,6 +30,25 @@ def index():
     """Render index.html"""
     return render_template("index.html")
 
+@app.route('/API')
+def api():
+    """ Send API Info to Front End """
+
+
+    googleClientId = os.environ["googleClientId"]
+    googleAPIKey = os.environ["googleAPIKey"]
+
+    return jsonify({"googleClientId": googleClientId, "googleAPIKey": googleAPIKey })
+
+@app.route('/session')
+def session():
+    """ Recieve id_token """
+
+    id_token = request.form.get("id_token")
+
+    # TODO Handle Sign In Tokens 
+
+    return jsonify({"signedIn": "tobedetermined"})
 
 @app.route('/todo')
 def intial_todo():
