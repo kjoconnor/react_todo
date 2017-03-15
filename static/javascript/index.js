@@ -1,10 +1,14 @@
+
+
+/////////// Componenets ////////////
 var Application = React.createClass ({
     
     getInitialState: function() {
 
         return {
             data: [],
-            content: ""
+            content: "",
+        
         };
     },
 
@@ -20,12 +24,13 @@ var Application = React.createClass ({
         });
     },
 
+
     componentDidMount: function(){
 
         this.loadServerDBTodos();
 
     },
-    
+
     handleSubmit: function(content) {
 
         $.ajax({
@@ -113,6 +118,7 @@ var Application = React.createClass ({
 });
 
 
+
 var NewTodoForm = React.createClass ({
 
     handleSubmit: function(event) {
@@ -134,12 +140,14 @@ var NewTodoForm = React.createClass ({
 
             <form className= "todoForm" onSubmit={this.handleSubmit}>
 
-                <label> The List Grows:
-                    <input type="text" ref="content" />
+                <label className = "newItemText"> The List Grows:
+                    
                 </label>
+                <div className="todoInputs">
+                <input className="todoInput" type="text" ref="content" />
 
-                <input type ="submit" value="Add" />  
-
+                <input  className="todoSubmit" type ="submit" value="Add" />  
+                </div> 
             </form>
         );
     }
@@ -159,7 +167,7 @@ var Checkbox = React.createClass({
         }
 
         return(
-            <input type="checkbox" checked = {checkValue} onChange={this.props.onCheck} />
+            <input className="checkbox" type="checkbox" checked = {checkValue} onChange={this.props.onCheck} />
         );
     }
 });
@@ -179,20 +187,28 @@ var Todo = React.createClass ({
             
             <div className="todo" todo={this.props.todo} key= {this.props.todo.id}>
                 
-                <Checkbox  onCheck={this.handleCheckboxToggle.bind(this, this.props.todo)} todo={this.props.todo} />
+                <div className="created_at">
+                        {this.props.todo.created_at}
+                </div>
+                <br />
 
-                {this.props.todo.created_at}
+                <div className="todoContent" >
+                    <Checkbox  onCheck={this.handleCheckboxToggle.bind(this, this.props.todo)} todo={this.props.todo} />
 
-                {this.props.todo.content}
+                    <div className="contentText">
+                        {this.props.todo.content}
+                    </div>
+                
                
-                <button key={this.props.todo.id} onClick={this.props.onDelete} > Remove </button>
+                    <button className="removeTodo" key={this.props.todo.id} onClick={this.props.onDelete} > Remove </button>
+                </div>
+                
     
             </div>
         );
     }
     
 });
-
 
 
 var List = React.createClass ({
@@ -210,6 +226,7 @@ var List = React.createClass ({
     
 
     render: function() {
+
         var todo = function(itemContent) {
             return (
                 
@@ -230,3 +247,92 @@ var List = React.createClass ({
 
 ReactDOM.render(<Application />, document.getElementById("content"));
 
+///// for access to environmental variable /////
+// var app_id = $(".fb-login-button").attr('value');
+// console.log(app_id);
+
+// function statusChangeCallback(response) {
+//     console.log('statusChangeCallback');
+//     console.log(response);
+    
+//     var app_session_class = document.getElementsByClassName("fb-login-button");
+//     var app_status = $(app_session_class).attr("app-session");
+    
+//     console.log(app_status);
+
+//     if (response.status === 'connected') {
+//       console.log("connected");
+//       onFBLogin(response);
+
+//     } else if (response.status === 'not_authorized') {
+    
+//     } 
+//     else if (app_status === 'no' && response.status === 'connected') {
+
+//         FB.logout(function(response) {
+        
+//             console.log("LogOut Because not in Session");
+//         });
+
+//     }
+//     else {
+      
+//         FB.getLoginStatus(function(response) {
+//             $.ajax({
+//                 url: '/session',
+//                 type: 'DELETE',
+//                 success: afterSignOut
+//             });
+//             console.log("In getLoginStatus");
+//         });
+//     }
+// }
+
+// // window.load= checkLoginState();
+// function checkLoginState() {
+//     FB.getLoginStatus(function(response) {
+//       statusChangeCallback(response);
+//     });
+// }
+
+// window.fbAsyncInit = function() {
+//     console.log("fbInit running");
+//     FB.init({
+//         appId      : app_id,
+//         cookie     : true,                 
+//         xfbml      : true,  
+//         version    : 'v2.8' 
+//     });
+// };
+
+
+// function postRequest(){
+    
+//     window.location.replace("/");
+// }
+
+// (function(d, s, id) {
+//     console.log("initializing fb...");
+//                 var js, fjs = d.getElementsByTagName(s)[0];
+                  
+//                 if (d.getElementById(id)) return;
+                  
+//                 js = d.createElement(s); js.id = id;
+//                 js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=" + app_id ;
+//                 fjs.parentNode.insertBefore(js, fjs);
+// }(document, 'script', 'facebook-jssdk'));
+
+
+// function onFBLogin(response) {
+
+//     var accessToken = response['authResponse']['accessToken'];
+//     var data = {"accessToken": accessToken};
+
+//     $.get("/session", data, postRequest);
+// }
+
+// /// Sign-Out with Facebook //////
+// function afterSignOut(){
+//     console.log("pass");
+//     window.location.assign("/");
+// }

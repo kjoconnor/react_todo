@@ -5,6 +5,26 @@ from sqlalchemy import desc
 import os
 import facebook
 
+##### session helper functions #####
+def current_user():
+    """ Return the user object if in session """
+
+    if 'current_user' in session:
+
+        return User.query.get(session['current_user'])
+
+    else:
+
+        return None
+
+
+###### facebook sign in helper functions #####
+def facebook_app_id():
+    """ Retrieve app_id from local environment """
+
+    app_id=os.environ["APP_ID"]
+
+    return app_id
 
 ##### "/" #######
 def gather_all_todos_from_db():
@@ -15,6 +35,30 @@ def gather_all_todos_from_db():
     if todos:
 
         return todos
+
+##### 'POST /notes' helper functions #####
+def load_user(access_token):
+    """ Use facebook access token to gather information """
+
+    token = access_token
+    graph = facebook.GraphAPI(token)
+    args = {'fields': 'id, name, email'}
+    profile = graph.get_object('me', **args)
+    facebook_id = profile['id']
+
+    #if profile_id in the database then sign them in if not load this information
+    user = User.query.filter_by(facebook_id=facebook_id).one_or_none()
+
+    if not user:
+
+        user = User(facebook_id=facebook_id, name=profile['name'], email=profile['email'])
+        db.session.add(user)
+        db.session.commit()
+
+    session['current_user'] = user.id
+    session['access_token'] = access_token
+
+    return 
 
 ##### /todo POST #######
 def commit_todo_to_db(content):

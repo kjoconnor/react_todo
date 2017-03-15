@@ -8,9 +8,6 @@ from model import *
 
 from helper_functions import *
 
-#for searlizing sqlalchemy objects
-from flask_marshmallow import Marshmallow
-
 from jinja2 import StrictUndefined
 
 #for facebook sign in
@@ -20,15 +17,41 @@ import os
 
 
 app = Flask(__name__)
-#for marshmellow searliazer to work
-ma = Marshmallow(app)
 
 app.secret_key = "pouring monday"
+
+
 
 @app.route('/')
 def index():
     """Render index.html"""
-    return render_template("index.html")
+
+    if not current_user():
+        return render_template("index.html", app_id=facebook_app_id(), user="no")
+
+    todos = gather_all_todos_from_db(current_user().id)
+        
+    return render_template("index.html", app_id=facebook_app_id(), user="yes", todos=todos)
+
+
+@app.route('/params')
+def params():
+    """ Send environmental variables to frontend """
+    
+    return jsonify({'app_id' : facebook_app_id()})
+
+
+@app.route('/session')
+def login():
+    """ Creates User Session and New Account if needed """
+
+    access_token = request.args.get("accessToken")
+
+    if access_token:
+
+        load_user(access_token)
+
+    return redirect('/') 
 
 
 @app.route('/todo')
