@@ -1,0 +1,99 @@
+body {
+    font-family: 'Hind', sans-serif;
+}
+
+#content {
+    width: 100%;
+    height: 100%;
+}
+
+.application {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.todoForm{ 
+    display: block;
+    width: 100%;
+    
+}
+
+.newItemText {
+    display: inline-block;
+    margin-right: 5px;
+
+}
+
+.todoInput {
+    display: inline-block;
+    margin: 0px 7px 7px 0px;
+    width: 88%;
+    height: 55px;    
+}
+
+.todoSubmit {
+    display: inline-block;
+    padding: 7px 12px 7px 12px;
+    margin: 5px;
+    background-color: #4764b3;
+    color: white;
+    border-radius: 2px;
+    border: none;
+    font-size: 12px;
+
+}
+
+.list {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.todo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin-left: 0px;
+    margin-top: 20px;
+    padding: 7px;
+    padding: 20px 20px 30px 0px;
+    border-bottom: gray solid 1px;
+    border-top: gray solid 1px;
+
+}
+
+.created_at{
+    display: block;
+    float: right;
+}
+
+.todoContent {
+    display: block;
+    padding-top: 3px;
+   
+}
+
+.contentText{
+    display: inline-block;
+}
+
+.removeTodo {
+    padding: 7px 12px 7px 12px;
+    margin: 5px;
+    background-color: #4764b3;
+    color: white;
+    border-radius: 2px;
+    border: none;
+    font-size: 12px;
+    float: right;
+}
+
+.checkbox {
+    height: 18px;
+    width: 18px;
+    margin-left: 0px;
+    margin-right: 7px;
+    margin-top: 7px;
+    float: left;
+}
