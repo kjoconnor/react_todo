@@ -1,12 +1,12 @@
-#React Todo List
+# React Todo List
 
-##Project Description:
+## Project Description:
 
 A simple flask app with react front end that allows a user to create, view, check, and delete todo items. One page fully dynamic. A simple building block application for future projects to be built on-top of.
 
 ## Getting Started:
 
-##Prerequisites:
+## Prerequisites:
 
 1) Download the project in a directory of its own. Navigate into the new directory and type in the following command.  
 
