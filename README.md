@@ -57,7 +57,22 @@ Werkzeug==0.11.15
     $ createdb todolist
     $ python model.py
 ```
-
+2) create secrets file and source secrets 
+    a) go to google and set up a developer acount to recieve ids
+    b) create a secrets.sh file in the main directory
+    ```
+    $ touch secrets.sh
+    ```
+    c) put the following code into the secrets.sh file
+    ```
+    export googleClientId="< your client id here >"
+    export googleAPIKey="< your API key here >"
+    export googleClientSecret= "< place your client secret here >"
+    ```
+    d) in the terminal source the secrets environmental varibales you just added
+    ```
+    $ source secrets.sh
+    ```
 4) To run the server file server.py :
 ``` 
     $ python server.py
