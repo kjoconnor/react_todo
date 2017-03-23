@@ -1,5 +1,6 @@
 var googleAPIKey;
 var googleClientId;
+var state;
 
 function grabAPIKey (){
     $.ajax({
@@ -16,14 +17,18 @@ function returnAPIKey(response) {
     intializeGoogleAuth()
 }
 
+function create_state() {
+    state = Date.now();
+}
 
 function intializeGoogleAuth(){
         
     console.log("intializeGoogleAuth is running")
+    state = create_state();
 
     var googleParams = {
-        apiKey : googleAPIKey, 
-        client_id : googleClientId, 
+        CLIENT_ID : googleAPIKey, 
+        STATE : state, 
         scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read',
     discoveryDocs: ["https://people.googleapis.com/$discovery/rest?version=v1"]
     }; 

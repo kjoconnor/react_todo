@@ -5,6 +5,12 @@ from sqlalchemy import desc
 import os
 import facebook
 
+##### Google SignIn #####
+def generate_state():
+    """ Create state for google SignIn security enters to session returns none """ 
+    state = hashlib.sha256(os.urandom(1024)).hexdigest()
+    session['state'] = state
+    
 
 ##### "/" #######
 def gather_all_todos_from_db():

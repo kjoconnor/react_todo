@@ -40,6 +40,8 @@ def api():
 
     return jsonify({"googleClientId": googleClientId, "googleAPIKey": googleAPIKey })
 
+
+
 @app.route('/session')
 def session():
     """ Recieve id_token """
