@@ -29,59 +29,58 @@ function intializeGoogleAuth(){
     var googleParams = {
         CLIENT_ID : googleAPIKey, 
         STATE : state, 
-        scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read',
-    discoveryDocs: ["https://people.googleapis.com/$discovery/rest?version=v1"]
+        SCOPE: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read',
+        REDIRECT_URI: '/session' ,
+        discoveryDocs: ["https://people.googleapis.com/$discovery/rest?version=v1"]
     }; 
 
-    gapi.auth2.init(googleParams).then(function () {
-        // Listen for sign-in state changes.
-        console.log("Trying to get init to run");
-        var auth = gapi.auth2.getAuthInstance();
-        console.log(auth.isSignedIn.get());
-        auth.isSignedIn.listen(handleUpdateSigninStatus);
-
-
-        // Handle the initial sign-in state.
-        handleUpdateSigninStatus(auth.isSignedIn.get());
+    $.ajax({
+        url: 'https://accounts.google.com/o/oauth2/v2/auth',
+        data: googleParams,
+        type: 'POST',
+        success: 'GoogleAuthIntiCallback'
     });
+    
 
 }
 
-
-function handleCallback(response) {
-
-    console.log("running handleCallback in App");
-
-    if(response['status']['signed_in']){ 
-        var request = gapi.client.plus.people.get(
-            {
-                'userId': 'me'
-            });
-        request.execute(function (resp){
-            var email = '';
-            if(resp['emails']){
-                for(i = 0; i < resp['emails'].length; i++){
-                    if(resp['emails'][i]['type'] == 'account'){
-                        email = resp['emails'][i]['value'];
-                    }
-                }
-            }
-
-           console.log(email);
-
-        });
-    } 
+function GoogleAuthIntiCallback(response){
+    console.log("response", response);
 }
+// function handleCallback(response) {
 
-function handleUpdateSigninStatus(isSignedInVal) {
-    if(isSignedInVal){
-        makeApiCall();
-    }
-}
+//     console.log("running handleCallback in App");
 
-function signInVerification(response){
-    console.log("response", response.signedIn);
-}
+//     if(response['status']['signed_in']){ 
+//         var request = gapi.client.plus.people.get(
+//             {
+//                 'userId': 'me'
+//             });
+//         request.execute(function (resp){
+//             var email = '';
+//             if(resp['emails']){
+//                 for(i = 0; i < resp['emails'].length; i++){
+//                     if(resp['emails'][i]['type'] == 'account'){
+//                         email = resp['emails'][i]['value'];
+//                     }
+//                 }
+//             }
+
+//            console.log(email);
+
+//         });
+//     } 
+// }
+
+// function handleUpdateSigninStatus(isSignedInVal) {
+//     if(isSignedInVal){
+//         makeApiCall();
+//     }
+// }
+
+// function signInVerification(response){
+//     console.log("response", response.signedIn);
+// }
 
 var Application = React.createClass ({
     getInitialState: function() {
