@@ -14,73 +14,15 @@ function returnAPIKey(response) {
     googleAPIKey = response.googleAPIKey;
     googleClientId = response.googleClientId;
 
-    intializeGoogleAuth()
 }
 
 function create_state() {
     state = Date.now();
+    console.log("create_state running")
+    console.log(typeof state, state);
+    return state;
 }
 
-function intializeGoogleAuth(){
-        
-    console.log("intializeGoogleAuth is running")
-    state = create_state();
-
-    var googleParams = {
-        CLIENT_ID : googleAPIKey, 
-        STATE : state, 
-        SCOPE: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read',
-        REDIRECT_URI: '/session' ,
-        discoveryDocs: ["https://people.googleapis.com/$discovery/rest?version=v1"]
-    }; 
-
-    $.ajax({
-        url: 'https://accounts.google.com/o/oauth2/v2/auth',
-        data: googleParams,
-        type: 'POST',
-        success: 'GoogleAuthIntiCallback'
-    });
-    
-
-}
-
-function GoogleAuthIntiCallback(response){
-    console.log("response", response);
-}
-// function handleCallback(response) {
-
-//     console.log("running handleCallback in App");
-
-//     if(response['status']['signed_in']){ 
-//         var request = gapi.client.plus.people.get(
-//             {
-//                 'userId': 'me'
-//             });
-//         request.execute(function (resp){
-//             var email = '';
-//             if(resp['emails']){
-//                 for(i = 0; i < resp['emails'].length; i++){
-//                     if(resp['emails'][i]['type'] == 'account'){
-//                         email = resp['emails'][i]['value'];
-//                     }
-//                 }
-//             }
-
-//            console.log(email);
-
-//         });
-//     } 
-// }
-
-// function handleUpdateSigninStatus(isSignedInVal) {
-//     if(isSignedInVal){
-//         makeApiCall();
-//     }
-// }
-
-// function signInVerification(response){
-//     console.log("response", response.signedIn);
-// }
 
 var Application = React.createClass ({
     getInitialState: function() {
@@ -91,59 +33,7 @@ var Application = React.createClass ({
             isSignedIn: false
         };
     },
-////////sigin in
-     
-    handleSignIn: function() {
 
-        console.log("running handleSignIn in App");
-        
-        var myParams = {
-            'clientid' : googleClientId, //You need to set client id
-            'cookiepolicy' : 'single_host_origin',
-            'callback' : handleCallback, //callback function
-            'approvalprompt':'force',
-            'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
-            };
-        gapi.auth2.getAuthInstance().singIn(myParams);
-
-        var id_token = googleUser.getAuthResponse().id_token;
-        $.ajax({
-        url: '/session',
-        data: {"id_token" : id_token},
-        type: 'POST',
-        success: signInVerification
-    });
-
-
-    },
-
-    handleSignOut: function() {
-        gapi.auth2.getAuthInstance().signOut();
-        // location.reload();
-
-    },
-
-    addGoogleScriptTag: function (){
-
-        console.log("addGoogleScriptTag");
-
-        var scriptTag = document.createElement("script");
-
-        scriptTag.src = "https://apis.google.com/js/api:client.js";
-        scriptTag.async = "true";
-        scriptTag.defer = "true";
-
-        document.head.appendChild(scriptTag);
-
-        scriptTag.onload= function (){
-            console.log("about to run intializeGoogleAuth");
-            gapi.load('client:auth2', grabAPIKey);
-            
-        }
-    },
-
-
-//////////////// end google //////
     loadServerDBTodos: function() {
         
         $.ajax({
@@ -160,11 +50,51 @@ var Application = React.createClass ({
 
         this.loadServerDBTodos();
 
-        this.addGoogleScriptTag();
+        
         
     },
 
     
+    intializeGoogleAuth: function(){
+        
+        console.log("intializeGoogleAuth is running")
+        grabAPIKey();
+
+        var state = create_state();
+        console.log(typeof state, state);
+
+        var googleParams = jQuery.param({
+            client_id : '302355475400-87jtgufdg8thajhtdo57eaupqucf2ucg.apps.googleusercontent.com', 
+            response_type: 'code',
+            scope: 'openid profile email',
+            redirect_uri: 'http://localhost:5000/session',
+            state : state  
+        });
+
+        var url = 'https://accounts.google.com/o/oauth2/v2/auth?'+googleParams; 
+
+        console.log({url});
+
+        window.location.href=url;
+
+        // $.ajax({
+        //     url: 'https://accounts.google.com/o/oauth2/v2/auth',
+        //     data: googleParams,
+        //     type: 'GET',
+        //     // headers: {
+        //     //     'Access-Control-Request-Headers': 'x-requested-with'
+        //     // },
+        //       xhrFields: {
+        //         withCredentials: true
+        //       },
+
+        //     dataType: 'json',
+        //     success: function(response) {console.log("response intializeGoogleAuth", response)}
+        // });
+    
+
+    },
+
     handleSubmit: function(content) {
 
         $.ajax({
@@ -242,7 +172,7 @@ var Application = React.createClass ({
 
             <div className="application">
 
-                <LoginButton onSignIn={this.handleSignIn} onCallback={this.handleCallback} />
+                <LoginButton onSignIn={this.intializeGoogleAuth} />
                 <LogoutButton onSignOut={this.handleSignOut} />
                 <NewTodoForm content={this.state.content} onNewTodoSubmit={this.handleSubmit} />
                 <List todos={this.state.data} onDelete={this.handleDelete} onCheck={this.handleCheckboxToggle} />
@@ -255,15 +185,17 @@ var Application = React.createClass ({
 
 var LoginButton = React.createClass({
 
-  handleSignIn: function() {
-    console.log("handleSignIn LoginButton Componenet running"); // plus any other logic here
+    handleClick: function(event){
+        event.preventDefault();
+        console.log("props", this.props);
+        this.props.onSignIn();
+        console.log("clicked the Login Button");
+    },
 
-  },
-
-  render: function() {
+    render: function() {
     
     return (
-       <div className="g-signin2" onClick={this.handleSignIn} onCallback={this.handleCallback}>Sign In With Google</div>
+       <button type="submit" className="g-signin2" onClick={this.handleClick.bind(this)} onSignIn={this.intializeGoogleAuth} >Sign In With Google</button>
     );
   }
 
