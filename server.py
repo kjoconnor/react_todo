@@ -1,5 +1,7 @@
 from flask import (Flask, request, render_template, redirect, flash, session, jsonify)
 
+import requests
+
 from flask_debugtoolbar import DebugToolbarExtension
 
 from sqlalchemy import (asc, desc) 
@@ -15,41 +17,74 @@ from jinja2 import StrictUndefined
 
 #for facebook sign in
 import facebook
-#for environmental variables for facebook API
+#for environmental variables for google/facebook API
 import os
+#for state
+import datetime
 
 
 app = Flask(__name__)
 #for marshmellow searliazer to work
 ma = Marshmallow(app)
 
+
 app.secret_key = "pouring monday"
 
 @app.route('/')
 def index():
     """Render index.html"""
+    
     return render_template("index.html")
 
 @app.route('/API')
 def api():
     """ Send API Info to Front End """
 
-
     googleClientId = os.environ["googleClientId"]
     googleAPIKey = os.environ["googleAPIKey"]
+    state = datetime.datetime.now().microsecond
+    
+    session['state']=state
 
-    return jsonify({"googleClientId": googleClientId, "googleAPIKey": googleAPIKey })
+
+    return jsonify({"googleClientId": googleClientId, "googleAPIKey": googleAPIKey, "state": state })
 
 
-@app.route('/session')
-def session():
-    """ Recieve id_token """
+@app.route('/signIn')
+def signIn():
+    """ Recieve and verify state and get code """
+    state = request.args.get("state")
+    
+    code= request.args.get("code")
+    
+    if state != session['state']:
+        session['saftyStatus'] = "Potentially Unsafe Connection"
 
-    id_token = request.form.get("id_token")
+        return redirect('/')
 
-    # TODO Handle Sign In Tokens 
+    else:
 
-    return jsonify({"signedIn": "tobedetermined"})
+        payload = { 'code': code,
+                'client_id': os.environ['googleClientId'] ,
+                'client_secret': os.environ['googleClientSecret'] ,
+                'redirect_uri': 'http://localhost:5000/token',
+                'grant_type': authorization_code 
+        }
+    
+        r = requests.get('https://www.googleapis.com/oauth2/v4/token', params=payload)
+
+        output = r.json()
+
+        print " output", output
+        
+       
+    return redirect('/')
+
+@app.route('/token')
+def token():
+    """ Send secrete and code to get token """
+
+    print "token is running", request.args.get("acces_token")
 
 @app.route('/todo')
 def intial_todo():

@@ -2,26 +2,29 @@ var googleAPIKey;
 var googleClientId;
 var state;
 
-function grabAPIKey (){
-    $.ajax({
-        url: '/API',
-        type: 'GET',
-        success: returnAPIKey
-    });
-}
 
 function returnAPIKey(response) {
     googleAPIKey = response.googleAPIKey;
     googleClientId = response.googleClientId;
+    state = response.state;
+   
 
+    var googleParams = jQuery.param({
+            client_id : googleClientId, 
+            response_type: 'code',
+            scope: 'openid profile email',
+            redirect_uri: 'http://localhost:5000/signIn',
+            state : state  
+        });
+
+        var url = 'https://accounts.google.com/o/oauth2/v2/auth?'+googleParams; 
+
+        console.log({url});
+
+        window.location.href=url;
+    
 }
 
-function create_state() {
-    state = Date.now();
-    console.log("create_state running")
-    console.log(typeof state, state);
-    return state;
-}
 
 
 var Application = React.createClass ({
@@ -49,49 +52,20 @@ var Application = React.createClass ({
     componentDidMount: function() {
 
         this.loadServerDBTodos();
-
-        
-        
+  
     },
 
     
     intializeGoogleAuth: function(){
         
         console.log("intializeGoogleAuth is running")
-        grabAPIKey();
 
-        var state = create_state();
-        console.log(typeof state, state);
-
-        var googleParams = jQuery.param({
-            client_id : '302355475400-87jtgufdg8thajhtdo57eaupqucf2ucg.apps.googleusercontent.com', 
-            response_type: 'code',
-            scope: 'openid profile email',
-            redirect_uri: 'http://localhost:5000/session',
-            state : state  
+        $.ajax({
+            url: '/API',
+            type: 'GET',
+            success: returnAPIKey
         });
 
-        var url = 'https://accounts.google.com/o/oauth2/v2/auth?'+googleParams; 
-
-        console.log({url});
-
-        window.location.href=url;
-
-        // $.ajax({
-        //     url: 'https://accounts.google.com/o/oauth2/v2/auth',
-        //     data: googleParams,
-        //     type: 'GET',
-        //     // headers: {
-        //     //     'Access-Control-Request-Headers': 'x-requested-with'
-        //     // },
-        //       xhrFields: {
-        //         withCredentials: true
-        //       },
-
-        //     dataType: 'json',
-        //     success: function(response) {console.log("response intializeGoogleAuth", response)}
-        // });
-    
 
     },
 
@@ -195,7 +169,7 @@ var LoginButton = React.createClass({
     render: function() {
     
     return (
-       <button type="submit" className="g-signin2" onClick={this.handleClick.bind(this)} onSignIn={this.intializeGoogleAuth} >Sign In With Google</button>
+       <button type="submit" className="g-signin2" onClick={this.handleClick.bind(this)} >Sign In With Google</button>
     );
   }
 
