@@ -1,6 +1,7 @@
 from flask import (Flask, request, render_template, redirect, flash, session, jsonify)
 
 import requests
+import json
 
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -54,37 +55,40 @@ def api():
 def signIn():
     """ Recieve and verify state and get code """
     state = request.args.get("state")
+    print state, "state", type(state)
+    print session['state'], type(session['state'])
+    state_check = session['state']
     
     code= request.args.get("code")
     
-    if state != session['state']:
-        session['saftyStatus'] = "Potentially Unsafe Connection"
 
-        return redirect('/')
-
-    else:
+    if int(state) == state_check:
 
         payload = { 'code': code,
                 'client_id': os.environ['googleClientId'] ,
                 'client_secret': os.environ['googleClientSecret'] ,
-                'redirect_uri': 'http://localhost:5000/token',
-                'grant_type': authorization_code 
+                'redirect_uri': 'http://localhost:5000/signIn',
+                'grant_type': 'authorization_code' 
         }
     
-        r = requests.get('https://www.googleapis.com/oauth2/v4/token', params=payload)
-
-        output = r.json()
-
-        print " output", output
+        r=requests.post('https://www.googleapis.com/oauth2/v4/token', data=json.dumps(payload))
+        print r.text
+        return r.text
         
+    else:
+        session['saftyStatus'] = "Potentially Unsafe Connection"
+        print "Redirecting to home"
+
+        return redirect('/')  
        
-    return redirect('/')
+    # return redirect('/token')
 
 @app.route('/token')
 def token():
     """ Send secrete and code to get token """
+    print request.args.get("acces_token")
+    return "token is running" 
 
-    print "token is running", request.args.get("acces_token")
 
 @app.route('/todo')
 def intial_todo():
