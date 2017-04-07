@@ -71,7 +71,7 @@ def signIn():
                 'grant_type': 'authorization_code' 
         }
     
-        r=requests.post('https://www.googleapis.com/oauth2/v4/token', data=json.dumps(payload))
+        r=requests.post('https://www.googleapis.com/oauth2/v4/token', data=payload)
         print r.text
         return r.text
         
